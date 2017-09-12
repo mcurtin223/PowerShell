@@ -1,0 +1,40 @@
+PowerShell Commands - Version 2
+
+/* Get Video card information
+Get-WmiObject Win32_PnPSignedDriver| select devicename, driverversion
+
+/*********** remotely get system information, such as video driver version 
+Get-WmiObject -ComputerName WSUBSMA02 Win32_PnPSignedDriver| select devicename, driverversion
+
+/* Get remote printer information - for Win 7, Win10 has Get-Printer
+Get-WmiObject win32_printer -ComputerName wtoyprtmgr01
+
+/* Micellaneous and common
+Get-ExecutionPolicy
+Set-ExecutionPolicy
+Get-Command		/* list all the commands. V5 has built in intelli-sense
+Get-Help
+Get-Member
+	i.e. : c:\ Get-Process | Get-Member
+
+
+************ To Get all parameter of a cmdlet  **********
+Get-Help Set-ExecutionPolicy 
+
+
+/*PowerShell Version check
+$PSVersionTable.PSversion
+
+**************** Uninstall Windows 10 crappy applications.  *********
+Get-AppxPackage *xboxapp* | Remove-AppxPackage
+Get-AppxPackage *bingsports* | Remove-AppxPackage
+
+************ List all the Appx crap *******************
+Get-AppxPackage | Select Name,PakcageFullName
+	this return a list of packages, then proceed to remove them
+
+Remove-AppxPackage *full package name*
+
+
+**************** Reinstall all the Windows 10 Crap. ******************
+Get-AppxPackage -AllUsers| Foreach {Add-AppxPackage -DisableDevelopmentMode -Register “$($_.InstallLocation)\AppXManifest.xml”}
