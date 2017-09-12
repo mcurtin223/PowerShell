@@ -38,3 +38,8 @@ Remove-AppxPackage *full package name*
 
 **************** Reinstall all the Windows 10 Crap. ******************
 Get-AppxPackage -AllUsers| Foreach {Add-AppxPackage -DisableDevelopmentMode -Register “$($_.InstallLocation)\AppXManifest.xml”}
+
+***************** 2 commands to export and import a default Windows 10 start menu
+Export-Startlayout –path C:\Windows\Temp\Startmenu.xml 
+
+Import-StartLayout –LayoutPath C:\Windows\Temp\Startmenu.xml -MountPath $env:SystemDrive\
