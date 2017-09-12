@@ -1,0 +1,3 @@
+Export-Startlayout –path C:\Windows\Temp\Startmenu.xml 
+
+Import-StartLayout –LayoutPath C:\Windows\Temp\Startmenu.xml -MountPath $env:SystemDrive\
