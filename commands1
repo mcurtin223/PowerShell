@@ -1,4 +1,4 @@
-PowerShell Commands - Version 2A-TEST
+PowerShell Commands - Collection of basic functions
 
 /* Get Video card information
 Get-WmiObject Win32_PnPSignedDriver| select devicename, driverversion
