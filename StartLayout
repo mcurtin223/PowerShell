@@ -1,5 +1,7 @@
 ***** Basic PowerShell commands to set a default Windows 10 Start Menu *****
-***** Will create a new default for all new users.   
+***** Will create a new default for all new users. 
+
+**** -MountPath usally is: c:\
 
 Export-Startlayout –path C:\Windows\Temp\Startmenu.xml 
 
