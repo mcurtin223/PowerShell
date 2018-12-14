@@ -1,5 +1,4 @@
 PowerShell Commands - Collection of basic functions
-**** Compiled 2018
 
 /* Get Video card information
 Get-WmiObject Win32_PnPSignedDriver| select devicename, driverversion
