@@ -1,21 +1,30 @@
 PowerShell Commands - Version 2
 
+/* To run powershell scripts */
+from powershell: c:./thescript.ps1
+from cmd: c:powershell.exe ./thescript.ps1
+
 /* Get Video card information
 Get-WmiObject Win32_PnPSignedDriver| select devicename, driverversion
 
 /*********** remotely get system information, such as video driver version 
 Get-WmiObject -ComputerName WSUBSMA02 Win32_PnPSignedDriver| select devicename, driverversion
+Get-WmiObject win32_bios -ComputerName
+
 
 /* Get remote printer information - for Win 7, Win10 has Get-Printer
 Get-WmiObject win32_printer -ComputerName wtoyprtmgr01
 
 /* Micellaneous and common
-Get-ExecutionPolicy
+Get-ExecutionPolicy 
 Set-ExecutionPolicy
 Get-Command		/* list all the commands. V5 has built in intelli-sense
 Get-Help
 Get-Member
 	i.e. : c:\ Get-Process | Get-Member
+
+************************ LIST REMOTE PC APPLICATIONS *************
+get-wmiobject Win32_Product -computername cvtemp01 | Format-Table IdentifyingNumber, Name, LocalPackage
 
 
 
@@ -39,12 +48,58 @@ Remove-AppxPackage *full package name*
 ************* Another way to list all windows 10 installed packages *****************
 Get-AppxPackage -AllUser | Format-List -Property PackageFullName,PackageUserInformation
 
+************ Remove AppxPackage allusers
+get-appxpackage -allusers -package-name- | remove-appxpackage -allusers
+
+
+************* Remove Provisioned Packages
+Remove-AppxProvisionedPackage -online -allusers -package "packagefullname"
+
+
 
 **************** Reinstall all the Windows 10 Crap. ******************
 Get-AppxPackage -AllUsers| Foreach {Add-AppxPackage -DisableDevelopmentMode -Register “$($_.InstallLocation)\AppXManifest.xml”}
 
+ ************************************************************************************
+ Windows 10 Tile Layout
+ 
+ From Start, open Windows PowerShell (admin)
+At the Windows PowerShell command prompt, enter the following command:
+Export-StartLayout –path <path><file name>.xml
 
-***************** 2 commands to export and import a default Windows 10 start menu
-Export-Startlayout –path C:\Windows\Temp\Startmenu.xml 
-Import-StartLayout –LayoutPath C:\Windows\Temp\Startmenu.xml -MountPath $env:SystemDrive\
+    Then import it as the default
+Import-StartLayout –LayoutPath <path><file name>.xml –MountPath c:\
+
+
+******************************************************************************************
+ADD a PRINTER
+Get-Printer -computername bhyslsmgrlt | format-list Name, drivername, Portname
+Add-PrinterPort -computername bhyslsmgrlt -Name "10.9.0.61" -PrinterHostAddress "10.9.0.61"
+Add-Printer -computername bhyslsmgrlt -name Xerox-61 -DriverName "Xerox Global Print Driver PCL6" -PortName 10.9.0.61
+Get-PrinterPort -computername bhyslsmgrlt
+remove-printer -computername bhbdc12 -name "Xerox Global Print Driver PCL6"
+
+
+***************************************************
+Get remote windows package names:
+Invoke-Command -ComputerName bifi05 -Credential lanphere\jit -ScriptBlock {get-windowspackage -online | select PackageName}
+
+*********************************************************
+Create a self signed certificate
+ New-SelfSignedCertificate -Subject "CN=domainname.com" -FriendlyName "domainname.com" -DnsName "domainname.com" -NotAfter (Get-Date).AddMonths(36) -CertStoreLocation cert:\LocalMachine\My
+ 
+**************************** RENAME A PC  ********************************* 
+Rename-Computer -computername "BICONFERENCE" -newname "BICONFERENCE-OLD" -DomainCredential lanphere\jit -force -restart
+
+************  GET BIOS INFO    win32_bios or win32_computersystem
+Get-WmiObject win32_bios -ComputerName bhysls02
+
+>systeminfo /s computername
+
+********************* REMOTE START/STOP a Service  *********************************************
+PS C:\Users\mcurtin> Get-Service -name dwmrcs -ComputerName autospa-spare | Set-Service -status Stopped
+PS C:\Users\mcurtin> Get-Service -name dwmrcs -ComputerName autospa-spare | Set-Service -status running
+
+ 
+ 
 
