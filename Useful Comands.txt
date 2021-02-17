@@ -1,0 +1,136 @@
+**************** Usefull Commands and Lanphere specific notes  ***************
+
+********Authenticate to Firewall  **********
+http://www.lanphere.info/auth.html
+
+
+	*** Get a Dell Tag number
+C:\Users\mcurtin>wmic /user:jit /node:10.15.1.29 bios get serialnumber
+Enter the password :********
+
+SerialNumber
+J8VSTR1
+
+
+	*** CDK Drive shortcut
+BHBDC01 CDK Shortcut
+\\bhbdc01\c$\users\public\public desktop
+
+http://207.186.44.86/bin/start/wsStart.application
+
+All other BDC PC's, Normal operation uses internet explorer:
+
+"C:\Program Files (x86)\Internet Explorer\iexplore.exe" http://207.186.44.86/bin/start/wsStart.application
+	
+	* Service Edge uses a different shortcut withing CDK Drive?
+
+	
+	**************** MPi Edge Client shortcut, this one downloads and installs the client
+"C:\Program Files\Internet Explorer\iexplore.exe" https://edgelauncher.mpilive.com/?DealerId=BEAVERTONKIA
+	*** MPi Edge Client shortcut, this one launchs the client application
+"C:\Program Files\Internet Explorer\iexplore.exe" https://launcher.autopoint.com/?DealerId=wilsnviltysc
+
+*********** MPI fix 
+	When MPI does not work on ONE PROFILE delete the following file:
+%appdata% logins.bin
+
+
+*********** Clear CDK browser and PC ********************
+*********************************************************
+ - IE, deleted history and cache and disabled the pop up blocker. 
+ - Adjusted the trusted sites settings made sure IE is the default browser. 
+ - Deleted the 2.0 folder C:\Users\%username%\AppData\Local\Apps
+ - Delete the contents of the Assembly folders C:\Users\%username%\AppData\Local\assembly 
+ - Delete C# folder C:\ProgramData\ADP\websuite
+ - if Bluezone problems, delete: C:\users\%username%\My Documents\BlueZone
+ 
+ ************* CDK Cenpos payment window error ****************************
+ Delete all contents in the folder located at.
+ C:\ProgramData\ADP\websuite\c159943
+ 
+ Reboot PC and test.
+ 
+
+ ************* CDK Service EDGE and Firefox version   *************
+ 	Case #123893613 - had to reset below to FALSE
+
+Reloading firefox:
+1.) Open firefox and in the URL type ABOUT:CONFIG 
+2.) Clear through the prompt saying "you''ll be careful" 
+3.) Search for "Mixed" in the search bar 
+4.) One of the results should say "security.mixed_content.block_active_content" and "security.mixed_content.block_display_content" 
+5.) Refresh Firefox: ABOUT:SUPPORT
+6.) C:\Users\''your_username''\AppData\Local\Mozilla\updates .... Delete update folder
+7.) Other items to set FALSE:
+		accessibility.blockautorefresh
+        xpinstall.signatures
+         
+ 
+ 
+ *****************************************************************
+ Restore file association for "Send to..., Compressed" function.
+ from CMD as Amdmin run:
+ assoc .zfsendtotarget=CLSID\{888DCA60-FC0A-11CF-8F0F-00C04FD7D062}
+ 
+************************************************************************************
+ Windows 10 Tile Layout
+ 
+ From Start, open Windows PowerShell (admin)
+At the Windows PowerShell command prompt, enter the following command:
+Export-StartLayout –path <path><file name>.xml
+
+    Then import it as the defaultsyst
+Import-StartLayout –LayoutPath <path><file name>.xml –MountPath c:\
+
+
+************RESTORE ALL APPX 
+Get-AppxPackage -allusers | foreach {Add-AppxPackage -register "$($_.InstallLocation)\appxmanifest.xml" -DisableDevelopmentMode}
+
+*******************************************************************
+C:\Users\mcurtin\AppData\LocalLow\Sun\Java\Deployment\security
+put the JAVA expecption.sites file here.....
+
+***********************************************************************
+Debugging symbol server
+srv*c:\symbols*https://msdl.microsoft.com/download/symbols
+
+*****************************************************************************************
+Remotely enable RDC via network registry: Change this key to 0.
+MUST START "Remote Registry" service on remote PC.
+Start REGEDIT and "Connect Network Registry..."
+Find HKEY_LOCAL_MACHINE \ SYSTEM \ CurrentControlSet \ Control \ Terminal Server 
+And locate the Key fDenyTSConnections
+sbout
+*******************************************************************************************
+wmiwmic
+SYSPREP persistant drivers
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Setup\Sysprep\Settings\sppnp set PersistAllDeviceInstalls to 1.
+or in an answer file.
+sysprep.exe /generalize /oobe /reboot /unattend:C:\Sysprep\unattend.xm﻿l
+
+SYSPREP-CLONE reinstall: If password error - Shift+F10 (command prompt) > secpol.msc > Account Propterties > reset length and complexity.
+
+
+********************************************
+Shortcuts vs Links vs Pinned.
+Pinned = In IE, drag URL Icon to desktop. Creates an un-editable link. Still can change the displayed name only.
+Shortcut = In IE, save as shortcut. Can edit URL
+
+************************************************
+Location of All Program shortcuts.
+c$\ProgramData\Microsoft\Windows\Start Menu\Programs\....
+
+
+*********************************************************
+Get Windows version infomation from ISO/Stick
+From elevated PS - Index number variesabout
+dism /get-wiminfo /wimfile:d:\sources\install.wim /index:10
+
+
+**************** BIOS RESET *************
+Set the PC BIOS password via Dell Command Config Tool.
+Copied folder "\\wtdistro\Shared\IT\SW\Dell\Bios" to the local C: drive. Ran command, then deleted folder.
+
+From elevated CMD ran.
+
+C:\BIOS\X86_64 cctk --setuppwd=newpassword
