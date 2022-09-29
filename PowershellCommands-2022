@@ -1,0 +1,120 @@
+PowerShell Commands - Version 2022
+
+/* To run powershell scripts */
+from powershell: c:./thescript.ps1
+from cmd: c:powershell.exe ./thescript.ps1
+
+/* Get Video card information
+Get-WmiObject Win32_PnPSignedDriver| select devicename, driverversion
+
+/*********** remotely get system information, such as video driver version 
+Get-WmiObject -ComputerName WSUBSMA02 Win32_PnPSignedDriver| select devicename, driverversion
+Get-WmiObject win32_bios -ComputerName
+
+
+/* Get remote printer information - for Win 7, Win10 has Get-Printer
+Get-WmiObject win32_printer -ComputerName wtoyprtmgr01
+
+/* Micellaneous and common
+Get-ExecutionPolicy 
+Set-ExecutionPolicy
+Get-Command		/* list all the commands. V5 has built in intelli-sense
+Get-Help
+Get-Member
+	i.e. : c:\ Get-Process | Get-Member
+
+************************ LIST REMOTE PC APPLICATIONS *************
+get-wmiobject Win32_Product -computername cvtemp01 | Format-Table IdentifyingNumber, Name, LocalPackage
+
+
+
+************ To Get all parameter of a cmdlet  **********
+Get-Help Set-ExecutionPolicy 
+
+
+/*PowerShell Version check
+$PSVersionTable.PSversion
+
+**************** Uninstall Windows 10 crappy applications.  *********
+Get-AppxPackage *xboxapp* | Remove-AppxPackage
+Get-AppxPackage *bingsports* | Remove-AppxPackage
+
+************ List all the Appx crap *******************
+Get-AppxPackage | Select Name,PakcageFullName
+	this return a list of packages, then proceed to remove them
+
+Remove-AppxPackage -Alluser *full package name*
+
+************* Another way to list all windows 10 installed packages *****************
+Get-AppxPackage -AllUser | Format-List -Property PackageFullName,PackageUserInformation
+
+************ Remove AppxPackage allusers
+get-appxpackage -allusers -package-name- | remove-appxpackage -allusers
+
+
+************* Remove Provisioned Packages
+Remove-AppxProvisionedPackage -online -allusers -package "packagefullname"
+
+
+
+**************** Reinstall all the Windows 10 Crap. ******************
+Get-AppxPackage -AllUsers| Foreach {Add-AppxPackage -DisableDevelopmentMode -Register “$($_.InstallLocation)\AppXManifest.xml”}
+
+ ************************************************************************************
+ Windows 10 Tile Layout
+ 
+ From Start, open Windows PowerShell (admin)
+At the Windows PowerShell command prompt, enter the following command:
+Export-StartLayout –path <path><file name>.xml
+
+    Then import it as the default
+Import-StartLayout –LayoutPath <path><file name>.xml –MountPath c:\
+
+
+******************************************************************************************
+ADD a PRINTER or get a PRINTER
+Get-Printer -computername bhyslsmgrlt | format-list Name, drivername, Portname
+Add-PrinterPort -computername bhyslsmgrlt -Name "10.9.0.61" -PrinterHostAddress "10.9.0.61"
+Add-Printer -computername bhyslsmgrlt -name Xerox-61 -DriverName "Xerox Global Print Driver PCL6" -PortName 10.9.0.61
+Get-PrinterPort -computername bhyslsmgrlt
+remove-printer -computername bhbdc12 -name "Xerox Global Print Driver PCL6"
+** if Get-Printer fails then try....
+Get-WmiObject -class win32_printer -computername bhoffmgr Drivername, Portname | Out-GridView
+
+***************************************************
+Get remote windows package names:
+Invoke-Command -ComputerName bifi05 -Credential lanphere\jit -ScriptBlock {get-windowspackage -online | select PackageName}
+
+*********************************************************
+Create a self signed certificate
+ New-SelfSignedCertificate -Subject "CN=domainname.com" -FriendlyName "domainname.com" -DnsName "domainname.com" -NotAfter (Get-Date).AddMonths(36) -CertStoreLocation cert:\LocalMachine\Myg
+ 
+**************************** RENAME A PC  ********************************* 
+Rename-Computer -computername "BICONFERENCE" -newname "BICONFERENCE-OLD" -DomainCredential lanphere\jit -force -restart
+
+************  GET BIOS INFO    win32_bios or win32_computersystem
+Get-WmiObject win32_bios -ComputerName bhysls02
+
+>systeminfo /s computername
+
+********************* REMOTE START/STOP a Service  *********************************************
+PS C:\Users\mcurtin> Get-Service -name dwmrcs -ComputerName autospa-spare | Set-Service -status Stopped
+PS C:\Users\mcurtin> Get-Service -name dwmrcs -ComputerName autospa-spare | Set-Service -status running
+
+***************** Add ALL USER VPN Connection
+add-vpnconnection -name "YourName" -serveraddress vpn.lanphereautogroup.com -alluserconnection -authenticationmethod Eap -tunneltype Sstp
+**** Note, authentication type will be set wrong (MsChapV2), change to EAP via Network interface configuration.
+**** ADD TO REGISTRY  [HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\SstpSvc\Parameters]
+"NoCertRevocationCheck"=dword:00000001
+ 
+ ***************** Get Logged on user  *********************************
+ Get-WmiObject -ComputerName BHRENTAL01 -Class Win32_computersystem | Select-Object UserName
+
+********************* Convert MS Laps Active Directory password expiration time   **********************
+****** must explicitly request the attribute "ms-MCS-AdmPwdExpirationTime" from Get-ADComputer. Add's it to the list of attributes included with $comp *****
+PS C:\Users\mcurtin> $comp = Get-ADComputer bhoffmgr-old -Properties ms-MCS-AdmPwdExpirationTime
+
+PS C:\Users\mcurtin> $([datetime]::FromFileTime([convert]::ToInt64($comp.'ms-MCS-AdmPwdExpirationTime',10)))
+
+Tuesday, June 28, 2022 7:21:49 PM
+
