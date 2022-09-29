@@ -11,6 +11,8 @@ Enter the password :********
 SerialNumber
 J8VSTR1
 
+*********** WINDOWS START MENU  ************
+C:\ProgramData\Microsoft\Windows\Start Menu\Programs
 
 	*** CDK Drive shortcut
 BHBDC01 CDK Shortcut
@@ -134,3 +136,52 @@ Copied folder "\\wtdistro\Shared\IT\SW\Dell\Bios" to the local C: drive. Ran com
 From elevated CMD ran.
 
 C:\BIOS\X86_64 cctk --setuppwd=newpassword
+
+
+*********************** UTILMAN.EXE ************************
+Boot WinPE, get to command prompt. Go to Volume with Windows\system32.
+copy utilman.exe to utilman.bak
+copy cmd.exe to utilman.exe
+reboot. Select accessories... starts cmd.
+run this in a BAT file. You can use notepad and save to system32.
+
+net user mcurtin Lanphere123reset! /add
+net localgroup administrators mcurtin /add
+net user mcurtin /active:yes
+
+Reboot and login locally as mcurtin.
+
+
+SSL/TLS checker tool - IIS Crypto by NARTAC
+
+
+
+********************************* DISM ******************************
+
+****** mount custom image  **********
+dism /mount-image /imagefile:E:\Sources\install.wim /mountdir:C:\mount /index:1
+
+dism /mount-image /imagefile:d:\Sources\install.wim /mountdir:C:\mount /index:1
+
+mounted image is located at c:\mount
+
+Copy your LayoutModification.json and LayoutModification.xml, to your mounted image. 
+Windows looks for these files in the \Windows\Users\Default\Appdata\Local\Microsoft\Windows\Shell folder. 
+If layoutmodification files already exists in the folder, replace the existing file(s) with the new one(s).
+
+******** unmount   ********
+dism /unmount-image /mountdir:C:\mount /commit
+
+******* trouble mounting image  **********
+dism /cleanup-wim
+
+********* get index list of install.wim  **********
+dism /get-imageinfo /imagefile:d:\sources\install.wim
+
+
+***** get list of packages ******
+dism.exe /image:c:\mount /get-packages
+
+dism.exe /image:c:\mount /get-apps > msiapps.txt
+
+CANNOT add/remove MSI apps via DISM
